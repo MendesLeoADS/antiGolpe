@@ -38,6 +38,23 @@ app.post("/send-location", async (req, res) => {
   }
 });
 
+app.post("/webhook", async (req, res) => {
+  const update = req.body;
+  console.log("Recebido do Telegram:", update);
+
+  if (update.message && update.message.text) {
+    const chatId = update.message.chat.id;
+    const text = update.message.text;
+
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+      chat_id: chatId,
+      text: `Você disse: ${text}`,
+    });
+  }
+
+  res.status(200).json({ success: true });
+});
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
